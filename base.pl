@@ -70,53 +70,40 @@ seeker(cho).
 seeker(harry).
 
 %%%%%% define the positions of entities on or off the pitch
-
 % any position is valid (but it must be above ground level)
-
 location(X,Y,Z):- integer(X), integer(Y), integer(Z), Z > 0.
 
-% a player from a team can be at a given location
-
+% a player from a team can be at a given location ---- is this player_position/4
 valid_position(P, X,Y,Z):- player(P, _), location(X,Y,Z).
 
 % a ball can be at a given position
-
 valid_position(B, X,Y,Z):- ball(B), location(X,Y,Z).
 
 %%%%%% player and ball positions can be defined as (examples provided)
 % you will need to define your own knowledge base examples to test your code
-
 % player(P, X,Y,Z).
 % ball(P, X,Y,Z).
 
 % e.g.
-
 % player(harry, 4,5,21).
 % ball(snitch, 8,7,23).
 
 %%%%%% current score can be defined as follows (examples provided)
 % you will need to define your own knowledge base examples to test your code
-
 % score(Team, Score).
 
 % e.g.
-
 % score(gryffindor,60).
 % score(ravenclaw,10).
 
-
 % Load Part A predicates 
-
-%[partA].
+:- consult('partA.pl').
 
 % Load Part B predicates
-
-%[partB].
+:- consult('partB.pl').
 
 % Load Part C predicates
-
-%[partC].
+:- consult('partC.pl').
 
 % load current state of the game
-
-[game].
+:- consult('game.pl').
