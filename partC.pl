@@ -1,42 +1,32 @@
 % partC
-% C1.Define a predicate hits(B,P) that holds if and only if a player whom is a beater, 
-% B, hits another player, P, (with their club) - here assuming that they automatically 
-% hit any player who comes within a 1 metre radius of their position.
+% C1 - hits/2 checks for beaters hitting other players
 hits(B,P) :-
-	B == beater,
+	beater(B),
 	player(B, X1,Y1,Z1),
-	player(B,T),
 	player(P, X2,Y2,Z2),
-	player(P,T2),
-	T \= T2,
-	% As radius is defined 1m (not variable) and dealing with integers...
-	((X1==X2, Y1==Y2, abs(Z1-Z2)==1);
-	(X1==X2, abs(Y1-Y2)==1, Z1==Z2);
-	(abs(X1-X2)==1, Y1==Y2, Z1==Z2)).
+	P \= B, % Player is not hitting self
+	XD = X2-X1,
+	YD = Y2-Y1,
+	ZD = Z2-Z1,
+	sqrt(XD*XD + YD*YD + ZD*ZD) =< 1.
 
-% C2.Define a predicate end_of_game(T1,T2) for a game between teams T1 and T2 that holds 
-% if and only if the snitch (ball) has been caught by the correct player from one of the 
-% teams whilst no player from either team was committing a foul and the formations of 
-% both teams are valid..
+% C2 - end_of_game/2 checks whether a game between two valid teams has ended
 end_of_game(T1, T2) :-
-	(snitch_caught(T1); snitch_caught(T2)),
-	(not(foul(T1)), not(foul(T2))),
-	(valid_team(T1), valid_team(T2)).
+	(snitch_caught(T1); snitch_caught(T2)), % The snitch has been caught
+	not(foul(T1)), not(foul(T2)), % No one is fouling
+	valid_team(T1), valid_team(T2), T1 \= T2. % Two valid teams
 
-% C3.Define a predicate update_score(T1, S1, T2, S2) that updates the scores (S1 and/or S2) 
-% based on either a goal being scored by either team or when the snitch (ball) has been 
-% caught by the correct player from one of the teams. In quidditch - “Each goal scored 
-% is worth ten points. .... Capturing the Snitch earns the Seeker's team 150 points”
+% C3 - update_score/2 checks if team T has scored with the snitch and/or quaffle, returning new score
 update_score(T,S) :-
-	(goal_scored(T), score(T, (S+10)));
-	(snitch_caught(T), score(T, (S+150)));
+	not(foul(T)),
+	score(T,X),
+	write(T),write('\'s score is '),write(X),nl,
+	((goal_scored(T), snitch_caught(T), S is X+160),!; %If snitch caught whilst goal scored
+	(goal_scored(T), S is X+10); % If goal scored ONLY
+	(snitch_caught(T), S is X+150)), % If snitch caught ONLY
+	write(T),write('\'s score is now '),write(S),nl.
 
+% update_score/4 checks whether either team T1 or T2's scores have increased using update_score/2
 update_score(T1, S1, T2, S2) :-
 	update_score(T1,S1);
 	update_score(T2,S2).
-
-% Again in order to test part C you will need to define a number of game configurations 
-% using player/4 and ball/4 (for player and ball positions). Add these test examples 
-% (and results) into your separate prolog file game.pl such that you can comment in 
-% and out different game configurations for testing. Clearly comment the tests that apply to Part C.
-
